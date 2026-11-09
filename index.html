@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f4ec">
+  <title>Ali Games - Tiny games, big fun</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f4ec;
+      --ink: #17231d;
+      --muted: #68756c;
+      --line: #d8ded4;
+      --green: #c9f36a;
+      --coral: #ff745d;
+      --blue: #70d9ee;
+      --yellow: #ffd45b;
+      --lavender: #c8b7ff;
+      --white: #fffef9;
+      --mono: "DM Mono", monospace;
+      --sans: "Space Grotesk", "Trebuchet MS", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: var(--paper);
+      background-image: radial-gradient(#d8ded4 0.75px, transparent 0.75px);
+      background-size: 18px 18px;
+      color: var(--ink);
+      font-family: var(--sans);
+    }
+    button { font: inherit; }
+    .shell { max-width: 1180px; margin: 0 auto; padding: 26px 34px 50px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+    .topbar-actions { display: flex; align-items: center; gap: 14px; }
+    .player-button { padding: 8px 11px; border: 1px solid var(--line); border-radius: 5px; background: var(--white); color: var(--ink); font: 11px var(--mono); cursor: pointer; }
+    .player-button:hover { border-color: var(--ink); }
+    .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; font-size: 20px; font-weight: 700; }
+    .brand-mark { width: 31px; height: 31px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; transform: rotate(-7deg); }
+    .brand-mark i { display: block; border-radius: 3px; background: var(--coral); }
+    .brand-mark i:nth-child(2) { background: var(--green); }
+    .brand-mark i:nth-child(3) { background: var(--blue); }
+    .brand-mark i:nth-child(4) { background: var(--yellow); }
+    .top-note { color: var(--muted); font: 11px var(--mono); letter-spacing: 0; text-transform: uppercase; }
+    .intro { display: flex; justify-content: space-between; align-items: end; gap: 30px; padding: 48px 0 29px; }
+    .eyebrow { color: #53654f; font: 11px var(--mono); text-transform: uppercase; }
+    h1 { margin: 9px 0 8px; font-size: clamp(38px, 6vw, 66px); line-height: .98; letter-spacing: 0; }
+    .intro p { margin: 0; color: var(--muted); font-size: 15px; }
+    .plays { flex: 0 0 auto; background: var(--ink); color: var(--white); border-radius: 7px; padding: 12px 15px; font: 11px var(--mono); text-transform: uppercase; }
+    .plays strong { color: var(--green); font-weight: 500; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; margin: 10px 0 14px; }
+    .section-heading h2 { margin: 0; font-size: 17px; }
+    .section-heading span { color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+    .game-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .game-card { --accent: var(--green); display: flex; flex-direction: column; min-width: 0; min-height: 236px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); color: var(--ink); text-align: left; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; animation: rise .45s both; }
+    .game-card:nth-child(2) { animation-delay: .04s; }
+    .game-card:nth-child(3) { animation-delay: .08s; }
+    .game-card:nth-child(4) { animation-delay: .12s; }
+    .game-card:nth-child(5) { animation-delay: .16s; }
+    .game-card:nth-child(6) { animation-delay: .2s; }
+    .game-card:nth-child(7) { animation-delay: .24s; }
+    .game-card:hover, .game-card:focus-visible { transform: translateY(-4px); border-color: var(--ink); box-shadow: 4px 5px 0 var(--ink); outline: none; }
+    .art { position: relative; display: grid; place-items: center; height: 116px; overflow: hidden; border-radius: 5px; background: var(--accent); }
+    .art::after { position: absolute; inset: 0; content: ""; opacity: .16; background-image: radial-gradient(var(--ink) .8px, transparent .8px); background-size: 11px 11px; }
+    .art-emoji { z-index: 1; font-size: 48px; filter: drop-shadow(2px 3px 0 rgba(23,35,29,.17)); transition: transform .2s ease; }
+    .game-card:hover .art-emoji { transform: scale(1.13) rotate(-5deg); }
+    .card-label { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 12px 1px 3px; }
+    .card-label strong { font-size: 15px; }
+    .arrow { display: grid; place-items: center; width: 23px; height: 23px; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 50%; font-size: 13px; }
+    .game-card small { margin: 0 1px; color: var(--muted); font-size: 12px; }
+    footer { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--line); color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+    dialog { width: min(680px, calc(100vw - 28px)); max-width: none; max-height: min(850px, calc(100dvh - 26px)); padding: 0; overflow: auto; border: 1px solid var(--ink); border-radius: 9px; background: var(--paper); color: var(--ink); box-shadow: 8px 8px 0 rgba(23,35,29,.25); }
+    dialog::backdrop { background: rgba(15, 24, 19, .67); backdrop-filter: blur(3px); }
+    .dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 20px 22px 16px; border-bottom: 1px solid var(--line); }
+    .dialog-head .eyebrow { font-size: 10px; }
+    .dialog-head h2 { margin: 3px 0 0; font-size: 26px; line-height: 1.15; }
+    .dialog-head p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .icon-button { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 5px; background: var(--white); color: var(--ink); font-size: 20px; cursor: pointer; }
+    .icon-button:hover { border-color: var(--ink); }
+    .game-content { padding: 19px 22px 21px; }
+    .game-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 34px; margin-bottom: 12px; }
+    .game-status { color: var(--muted); font: 12px var(--mono); }
+    .game-score { padding: 7px 10px; border-radius: 4px; background: var(--green); font: 11px var(--mono); }
+    .restart { padding: 8px 11px; border: 1px solid var(--ink); border-radius: 4px; background: var(--white); color: var(--ink); font: 11px var(--mono); cursor: pointer; }
+    .restart:hover { background: var(--ink); color: white; }
+    .play-area { display: grid; place-items: center; min-height: 320px; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--white); }
+    canvas { display: block; width: min(100%, 480px); height: auto; aspect-ratio: 1; background: #17231d; touch-action: none; }
+    .memory-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 76px)); justify-content: center; gap: 9px; padding: 15px; }
+    .memory-card { display: grid; place-items: center; aspect-ratio: 1; border: 1px solid var(--ink); border-radius: 5px; background: var(--blue); color: var(--ink); font-size: 30px; cursor: pointer; transition: transform .12s ease, background .15s ease; }
+    .memory-card:not(:disabled):hover { transform: scale(1.05); }
+    .memory-card.flipped, .memory-card.matched { background: var(--yellow); }
+    .memory-card:disabled { cursor: default; }
+    .ttt-board { display: grid; grid-template-columns: repeat(3, 92px); gap: 8px; padding: 20px; }
+    .ttt-cell { display: grid; place-items: center; aspect-ratio: 1; border: 1px solid var(--ink); border-radius: 5px; background: var(--blue); color: var(--ink); font-size: 46px; font-weight: 700; cursor: pointer; }
+    .ttt-cell:nth-child(even) { background: var(--yellow); }
+    .ttt-cell:disabled { cursor: default; }
+    .click-zone { position: relative; width: min(100%, 480px); height: 330px; overflow: hidden; background-color: #e7f8f6; background-image: linear-gradient(rgba(23,35,29,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(23,35,29,.06) 1px, transparent 1px); background-size: 24px 24px; }
+    .click-target { position: absolute; width: 70px; height: 70px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 50%; background: var(--coral); box-shadow: 3px 4px 0 var(--ink); font-size: 29px; cursor: pointer; transition: left .1s, top .1s, transform .1s; }
+    .click-target:active { transform: scale(.88); }
+    .touch-note { margin: 12px 0 0; color: var(--muted); text-align: center; font: 10px var(--mono); }
+    .leaderboards { margin-top: 38px; }
+    .leaderboard-status { min-height: 20px; margin: -4px 0 15px; color: var(--muted); font-size: 12px; }
+    .leaderboard-status.error { color: #a52e20; }
+    .leaderboard-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .leaderboard { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--white); }
+    .leaderboard h3 { margin: 0 0 10px; font-size: 14px; }
+    .leaderboard ol { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+    .leaderboard li { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 8px; font-size: 12px; }
+    .leaderboard-rank { color: var(--muted); font: 10px var(--mono); }
+    .leaderboard-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .leaderboard-score { font: 10px var(--mono); }
+    .leaderboard-empty { color: var(--muted); font-size: 12px; }
+    .leaderboard-score-label { margin-top: 10px; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; }
+    .player-dialog { width: min(420px, calc(100vw - 28px)); padding: 22px; }
+    .player-dialog h2 { margin: 0 0 6px; font-size: 23px; }
+    .player-dialog p { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
+    .player-dialog label { display: block; margin-bottom: 6px; font: 11px var(--mono); }
+    .player-dialog input { width: 100%; padding: 11px; border: 1px solid var(--line); border-radius: 5px; background: var(--white); color: var(--ink); font: inherit; }
+    .player-dialog button[type="submit"] { width: 100%; margin-top: 12px; padding: 11px; border: 1px solid var(--ink); border-radius: 5px; background: var(--green); color: var(--ink); font-weight: 700; cursor: pointer; }
+    @keyframes rise { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 800px) { .game-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 560px) {
+      .shell { padding: 17px 16px 30px; }
+      .topbar { padding-bottom: 13px; }
+      .topbar-actions { gap: 8px; }
+      .player-button { padding: 7px; font-size: 9px; }
+      .top-note { max-width: 140px; text-align: right; line-height: 1.5; }
+      .intro { align-items: flex-start; padding: 34px 0 22px; }
+      .intro p { max-width: 240px; font-size: 13px; line-height: 1.5; }
+      .plays { display: none; }
+      .game-grid, .leaderboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .game-card { min-height: 202px; padding: 9px; }
+      .art { height: 103px; }
+      .art-emoji { font-size: 41px; }
+      .card-label strong { font-size: 13px; }
+      .game-card small { font-size: 11px; }
+      .dialog-head { padding: 16px; }
+      .game-content { padding: 13px 12px 16px; }
+      .play-area { min-height: 260px; }
+      .memory-grid { grid-template-columns: repeat(4, minmax(0, 64px)); gap: 7px; }
+      .ttt-board { grid-template-columns: repeat(3, minmax(0, 76px)); gap: 6px; padding: 14px; }
+      .ttt-cell { font-size: 39px; }
+      footer { font-size: 9px; }
+    }
+    @media (max-width: 360px) { .leaderboard-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Ali Games home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>ali games</a>
+      <div class="topbar-actions"><span class="top-note">A new game every month</span><button class="player-button" id="player-button" type="button">Player</button></div>
+    </header>
+    <section class="intro" aria-labelledby="page-title">
+      <div><div class="eyebrow">The tiny internet arcade</div><h1 id="page-title">Pick a game.<br>Make a day.</h1><p>Quick games, no downloads. What are we playing?</p></div>
+      <div class="plays"><strong>6</strong> games ready to play</div>
+    </section>
+    <div class="section-heading"><h2>Game shelf</h2><span>Choose your next little obsession</span></div>
+    <section class="game-grid" aria-label="Games">
+      <button class="game-card" style="--accent:#c9f36a" data-game="snake"><span class="art"><span class="art-emoji">🐍</span></span><span class="card-label"><strong>Snake</strong><span class="arrow">↗</span></span><small>Eat. Grow. Don't bonk.</small></button>
+      <button class="game-card" style="--accent:#ffd45b" data-game="memory"><span class="art"><span class="art-emoji">🃏</span></span><span class="card-label"><strong>Memory Match</strong><span class="arrow">↗</span></span><small>Flip, remember, match.</small></button>
+      <button class="game-card" style="--accent:#ff9f87" data-game="dodge"><span class="art"><span class="art-emoji">☄️</span></span><span class="card-label"><strong>Dodge the Blocks</strong><span class="arrow">↗</span></span><small>Keep moving. Stay alive.</small></button>
+      <button class="game-card" style="--accent:#c8b7ff" data-game="ttt"><span class="art"><span class="art-emoji">⭕</span></span><span class="card-label"><strong>Tic-Tac-Toe</strong><span class="arrow">↗</span></span><small>You vs. the computer.</small></button>
+      <button class="game-card" style="--accent:#ffd45b" data-game="breakout"><span class="art"><span class="art-emoji">🧱</span></span><span class="card-label"><strong>Brick Breaker</strong><span class="arrow">↗</span></span><small>Clear the wall. Keep the ball.</small></button>
+      <button class="game-card" style="--accent:#70d9ee" data-game="click"><span class="art"><span class="art-emoji">👆</span></span><span class="card-label"><strong>Click Challenge</strong><span class="arrow">↗</span></span><small>15 seconds. How many clicks?</small></button>
+    </section>
+    <section class="leaderboards" aria-labelledby="leaderboard-title">
+      <div class="section-heading"><h2 id="leaderboard-title">Global leaderboards</h2><span>Top 10 players in each game</span></div>
+      <p class="leaderboard-status" id="leaderboard-status" aria-live="polite">Loading scores…</p>
+      <div class="leaderboard-grid" id="leaderboard-grid"></div>
+    </section>
+    <footer><span>Made for a little play break</span><span>Ali Games / No. 001</span></footer>
+  </main>
+
+  <dialog id="game-dialog" aria-labelledby="game-title">
+    <div class="dialog-head"><div><div class="eyebrow">Ali Games / now playing</div><h2 id="game-title">Game</h2><p id="game-instructions"></p></div><button class="icon-button" id="close-game" aria-label="Close game">×</button></div>
+    <div class="game-content"><div class="game-toolbar"><span class="game-status" id="game-status" aria-live="polite"></span><span class="game-score" id="game-score"></span><button class="restart" id="restart-game">Restart</button></div><div class="play-area" id="play-area"></div><p class="touch-note" id="touch-note"></p></div>
+  </dialog>
+  <dialog class="player-dialog" id="player-dialog" aria-labelledby="player-dialog-title">
+    <form id="player-form">
+      <h2 id="player-dialog-title">What should we call you?</h2>
+      <p>Your name is saved on this device and shown beside your scores.</p>
+      <label for="player-name">Player name</label>
+      <input id="player-name" name="name" maxlength="20" autocomplete="nickname" required>
+      <button type="submit">Save name &amp; play</button>
+    </form>
+  </dialog>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script>
+    const dialog = document.querySelector('#game-dialog');
+    const title = document.querySelector('#game-title');
+    const instructions = document.querySelector('#game-instructions');
+    const status = document.querySelector('#game-status');
+    const score = document.querySelector('#game-score');
+    const area = document.querySelector('#play-area');
+    const touchNote = document.querySelector('#touch-note');
+    const leaderboardGrid = document.querySelector('#leaderboard-grid');
+    const leaderboardStatus = document.querySelector('#leaderboard-status');
+    const playerDialog = document.querySelector('#player-dialog');
+    const playerForm = document.querySelector('#player-form');
+    const playerNameInput = document.querySelector('#player-name');
+    const playerButton = document.querySelector('#player-button');
+    let activeGame = '';
+    let cleanup = () => {};
+    let playerName = localStorage.getItem('ali-games-player-name') || '';
+    let localPlayerId = localStorage.getItem('ali-games-player-id');
+    let firebaseUid = '';
+    let firebaseDb = null;
+    let firebaseReady = Promise.resolve(false);
+
+    const gameInfo = {
+      snake: ['Snake', 'Arrow keys or WASD to steer. Eat the dots and avoid the walls and your tail.', 'Arrow keys / WASD'],
+      memory: ['Memory Match', 'Flip two cards at a time and find all eight pairs.', 'Tap or click cards'],
+      dodge: ['Dodge the Blocks', 'Move left and right to survive the falling blocks.', 'Arrow keys / A and D'],
+      ttt: ['Tic-Tac-Toe', 'You are X. Get three in a row before the computer does.', 'Tap or click a square'],
+      breakout: ['Brick Breaker', 'Move the paddle to bounce the ball and clear every brick.', 'Arrow keys / A and D'],
+      click: ['Click Challenge', 'Hit the moving target as many times as you can in 15 seconds.', 'Tap or click the target']
+    };
+
+    const gameScores = {
+      snake: { label: 'dots', direction: 'desc' },
+      memory: { label: 'turns (lower is better)', direction: 'asc' },
+      dodge: { label: 'seconds', direction: 'desc' },
+      ttt: { label: 'wins', direction: 'desc' },
+      breakout: { label: 'bricks', direction: 'desc' },
+      click: { label: 'hits', direction: 'desc' }
+    };
+
+    const FIREBASE_CONFIG = {
+      apiKey: 'YOUR_FIREBASE_API_KEY',
+      authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
+      projectId: 'YOUR_PROJECT_ID',
+      appId: 'YOUR_FIREBASE_APP_ID'
+    };
+
+    function setLeaderboardStatus(message, isError = false) {
+      leaderboardStatus.textContent = message;
+      leaderboardStatus.classList.toggle('error', isError);
+    }
+
+    function sortedEntries(game, entries) {
+      const direction = gameScores[game].direction === 'asc' ? 1 : -1;
+      return entries.sort((a, b) => direction * (a.score - b.score) || a.displayName.localeCompare(b.displayName)).slice(0, 10);
+    }
+
+    function renderLeaderboard(game, entries) {
+      const section = document.createElement('article');
+      section.className = 'leaderboard';
+      const heading = document.createElement('h3');
+      heading.textContent = gameInfo[game][0];
+      section.append(heading);
+      if (!entries.length) {
+        const empty = document.createElement('p');
+        empty.className = 'leaderboard-empty';
+        empty.textContent = 'No scores yet. Be the first!';
+        section.append(empty);
+      } else {
+        const list = document.createElement('ol');
+        sortedEntries(game, entries).forEach((entry, index) => {
+          const item = document.createElement('li');
+          const rank = document.createElement('span');
+          rank.className = 'leaderboard-rank';
+          rank.textContent = `${index + 1}.`;
+          const name = document.createElement('span');
+          name.className = 'leaderboard-name';
+          name.textContent = entry.displayName;
+          const value = document.createElement('span');
+          value.className = 'leaderboard-score';
+          value.textContent = entry.score;
+          item.append(rank, name, value);
+          list.append(item);
+        });
+        section.append(list);
+      }
+      const scoreLabel = document.createElement('div');
+      scoreLabel.className = 'leaderboard-score-label';
+      scoreLabel.textContent = gameScores[game].label;
+      section.append(scoreLabel);
+      leaderboardGrid.append(section);
+    }
+
+    function localScoresKey() { return 'ali-games-leaderboard'; }
+    function readLocalScores() {
+      try {
+        return JSON.parse(localStorage.getItem(localScoresKey()) || '{}');
+      } catch (error) {
+        console.error('Could not read saved scores.', error);
+        setLeaderboardStatus('Saved scores could not be read from this browser.', true);
+        return {};
+      }
+    }
+
+    function renderLocalLeaderboards() {
+      const scores = readLocalScores();
+      leaderboardGrid.replaceChildren();
+      Object.keys(gameScores).forEach(game => renderLeaderboard(game, scores[game] || []));
+    }
+
+    function hasFirebaseConfig() {
+      return window.firebase &&
+        FIREBASE_CONFIG.apiKey !== 'YOUR_FIREBASE_API_KEY' &&
+        FIREBASE_CONFIG.projectId !== 'YOUR_PROJECT_ID' &&
+        FIREBASE_CONFIG.appId !== 'YOUR_FIREBASE_APP_ID';
+    }
+
+    async function saveCloudProfile() {
+      if (!firebaseDb || !firebaseUid || !playerName) return;
+      await firebaseDb.collection('players').doc(firebaseUid).set({
+        displayName: playerName,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      const scoreRefs = Object.keys(gameScores).map(game =>
+        firebaseDb.collection('leaderboards').doc(game).collection('scores').doc(firebaseUid)
+      );
+      const scoreDocs = await Promise.all(scoreRefs.map(ref => ref.get()));
+      const batch = firebaseDb.batch();
+      let updatedScores = 0;
+      scoreDocs.forEach((doc, index) => {
+        if (doc.exists && doc.data().displayName !== playerName) {
+          batch.update(scoreRefs[index], {
+            displayName: playerName,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          updatedScores++;
+        }
+      });
+      if (updatedScores) await batch.commit();
+    }
+
+    async function loadLeaderboards() {
+      if (!firebaseDb) {
+        renderLocalLeaderboards();
+        return;
+      }
+      try {
+        const results = await Promise.all(Object.keys(gameScores).map(async game => {
+          const snapshot = await firebaseDb.collection('leaderboards').doc(game).collection('scores')
+            .orderBy('score', gameScores[game].direction).limit(10).get();
+          return [game, snapshot.docs.map(doc => doc.data())];
+        }));
+        leaderboardGrid.replaceChildren();
+        results.forEach(([game, entries]) => renderLeaderboard(game, entries));
+        setLeaderboardStatus('Showing the global top 10. Scores are saved to Firebase.');
+      } catch (error) {
+        console.error('Could not load global leaderboards.', error);
+        setLeaderboardStatus('Could not load global scores. Check your Firebase setup and Firestore rules.', true);
+      }
+    }
+
+    async function recordScore(game, value) {
+      const bestLocal = (entries, newScore) => {
+        const existing = entries.find(entry => entry.uid === localPlayerId);
+        const isBetter = !existing || (gameScores[game].direction === 'asc' ? newScore < existing.score : newScore > existing.score);
+        if (isBetter) {
+          const next = entries.filter(entry => entry.uid !== localPlayerId);
+          next.push({ uid: localPlayerId, displayName: playerName, score: newScore });
+          return next;
+        }
+        return entries;
+      };
+      try {
+        const allScores = readLocalScores();
+        allScores[game] = bestLocal(allScores[game] || [], value);
+        localStorage.setItem(localScoresKey(), JSON.stringify(allScores));
+        if (!firebaseDb) {
+          renderLocalLeaderboards();
+          return;
+        }
+        await firebaseReady;
+        if (!firebaseUid) {
+          renderLocalLeaderboards();
+          setLeaderboardStatus('Score saved in this browser, but Firebase is not connected.', true);
+          return;
+        }
+        const scoreRef = firebaseDb.collection('leaderboards').doc(game).collection('scores').doc(firebaseUid);
+        const existing = await scoreRef.get();
+        const current = existing.exists ? existing.data().score : null;
+        const isBetter = current === null || (gameScores[game].direction === 'asc' ? value < current : value > current);
+        if (isBetter) {
+          await scoreRef.set({
+            uid: firebaseUid,
+            displayName: playerName,
+            score: value,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        await loadLeaderboards();
+      } catch (error) {
+        console.error(`Could not save ${game} score.`, error);
+        setLeaderboardStatus('Your score could not be saved. Check your internet connection and Firebase setup.', true);
+      }
+    }
+
+    function initializeFirebase() {
+      if (!window.firebase) {
+        setLeaderboardStatus('Firebase could not load. Check your internet connection.', true);
+        return;
+      }
+      if (!hasFirebaseConfig()) {
+        setLeaderboardStatus('Browser-only scores. Add Firebase setup to share leaderboards globally.');
+        return;
+      }
+      try {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        firebaseDb = firebase.firestore();
+        firebaseReady = firebase.auth().signInAnonymously().then(async credential => {
+          firebaseUid = credential.user.uid;
+          await saveCloudProfile();
+          await loadLeaderboards();
+          return true;
+        }).catch(error => {
+          console.error('Could not connect to Firebase.', error);
+          setLeaderboardStatus('Could not connect to Firebase. Check anonymous sign-in and Firestore settings.', true);
+          return false;
+        });
+      } catch (error) {
+        console.error('Firebase initialization failed.', error);
+        setLeaderboardStatus('Firebase could not start. Check the Firebase configuration.', true);
+      }
+    }
+
+    function updatePlayerButton() {
+      playerButton.textContent = playerName ? `Player: ${playerName}` : 'Player';
+    }
+
+    function createLocalPlayerId() {
+      return window.crypto?.randomUUID?.() || `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    playerButton.addEventListener('click', () => {
+      playerNameInput.value = playerName;
+      playerDialog.showModal();
+      playerNameInput.focus();
+    });
+    playerForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const newName = playerNameInput.value.trim();
+      if (!newName) {
+        playerNameInput.setCustomValidity('Please enter a player name.');
+        playerNameInput.reportValidity();
+        return;
+      }
+      playerNameInput.setCustomValidity('');
+      playerName = newName;
+      localStorage.setItem('ali-games-player-name', playerName);
+      const localScores = readLocalScores();
+      Object.values(localScores).forEach(entries => {
+        const ownScore = entries.find(entry => entry.uid === localPlayerId);
+        if (ownScore) ownScore.displayName = playerName;
+      });
+      localStorage.setItem(localScoresKey(), JSON.stringify(localScores));
+      if (!localPlayerId) {
+        localPlayerId = createLocalPlayerId();
+        localStorage.setItem('ali-games-player-id', localPlayerId);
+      }
+      updatePlayerButton();
+      playerDialog.close();
+      if (firebaseUid) {
+        saveCloudProfile().catch(error => {
+          console.error('Could not save player name.', error);
+          setLeaderboardStatus('Your name could not be saved to Firebase.', true);
+        });
+      }
+    });
+    playerNameInput.addEventListener('input', () => playerNameInput.setCustomValidity(''));
+
+    if (!localPlayerId) {
+      localPlayerId = createLocalPlayerId();
+      localStorage.setItem('ali-games-player-id', localPlayerId);
+    }
+    updatePlayerButton();
+    initializeFirebase();
+    if (!playerName) playerDialog.showModal();
+    else if (!firebaseDb) renderLocalLeaderboards();
+
+    function setStatus(text) { status.textContent = text; }
+    function setScore(text) { score.textContent = text; }
+    function stopGame() { cleanup(); cleanup = () => {}; }
+    function openGame(name) {
+      activeGame = name;
+      stopGame();
+      const [gameTitle, help, controls] = gameInfo[name];
+      title.textContent = gameTitle;
+      instructions.textContent = help;
+      touchNote.textContent = controls;
+      area.replaceChildren();
+      setStatus('');
+      setScore('');
+      dialog.showModal();
+      if (name === 'snake') startSnake();
+      if (name === 'memory') startMemory();
+      if (name === 'dodge') startDodge();
+      if (name === 'ttt') startTicTacToe();
+      if (name === 'breakout') startBreakout();
+      if (name === 'click') startClickChallenge();
+    }
+    document.querySelectorAll('.game-card').forEach(card => card.addEventListener('click', () => openGame(card.dataset.game)));
+    document.querySelector('#close-game').addEventListener('click', () => dialog.close());
+    document.querySelector('#restart-game').addEventListener('click', () => openGame(activeGame));
+    dialog.addEventListener('close', stopGame);
+    dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+
+    function addCanvas() {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = 480;
+      canvas.setAttribute('aria-label', `${title.textContent} game board`);
+      area.append(canvas);
+      return canvas.getContext('2d');
+    }
+    function endCanvasGame(ctx, message) {
+      ctx.fillStyle = 'rgba(23,35,29,.78)';
+      ctx.fillRect(0, 0, 480, 480);
+      ctx.fillStyle = '#c9f36a';
+      ctx.textAlign = 'center';
+      ctx.font = 'bold 34px "Space Grotesk", sans-serif';
+      ctx.fillText(message, 240, 230);
+      ctx.fillStyle = '#fffef9';
+      ctx.font = '16px "DM Mono", monospace';
+      ctx.fillText('Hit Restart to play again', 240, 266);
+    }
+    function keyControls(handler) {
+      const onKey = event => {
+        if (!dialog.open) return;
+        const key = event.key.toLowerCase();
+        if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key)) event.preventDefault();
+        handler(key);
+      };
+      window.addEventListener('keydown', onKey);
+      return () => window.removeEventListener('keydown', onKey);
+    }
+
+    function startSnake() {
+      const ctx = addCanvas();
+      const size = 24, cells = 20;
+      let snake = [{ x: 9, y: 10 }, { x: 8, y: 10 }, { x: 7, y: 10 }];
+      let direction = { x: 1, y: 0 }, nextDirection = direction;
+      let food = { x: 14, y: 10 }, points = 0, alive = true, last = 0, elapsed = 0;
+      setStatus('Ready when you are'); setScore('0 dots');
+      function placeFood() {
+        do { food = { x: Math.floor(Math.random() * cells), y: Math.floor(Math.random() * cells) }; }
+        while (snake.some(part => part.x === food.x && part.y === food.y));
+      }
+      const removeKeys = keyControls(key => {
+        const dirs = { arrowup: [0, -1], w: [0, -1], arrowdown: [0, 1], s: [0, 1], arrowleft: [-1, 0], a: [-1, 0], arrowright: [1, 0], d: [1, 0] };
+        if (dirs[key]) { const [x, y] = dirs[key]; if (x !== -direction.x || y !== -direction.y) nextDirection = { x, y }; }
+      });
+      function frame(time) {
+        if (!alive) return;
+        if (time - last > 115) {
+          last = time; direction = nextDirection;
+          const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+          if (head.x < 0 || head.y < 0 || head.x >= cells || head.y >= cells || snake.some(part => part.x === head.x && part.y === head.y)) {
+            alive = false; setStatus(`Game over. You found ${points} ${points === 1 ? 'dot' : 'dots'}.`); void recordScore('snake', points); endCanvasGame(ctx, 'Nice run!'); return;
+          }
+          snake.unshift(head);
+          if (head.x === food.x && head.y === food.y) { points++; placeFood(); setScore(`${points} ${points === 1 ? 'dot' : 'dots'}`); }
+          else snake.pop();
+        }
+        ctx.fillStyle = '#17231d'; ctx.fillRect(0, 0, 480, 480);
+        ctx.fillStyle = '#ff745d'; ctx.beginPath(); ctx.arc(food.x * size + 12, food.y * size + 12, 8, 0, Math.PI * 2); ctx.fill();
+        snake.forEach((part, index) => { ctx.fillStyle = index ? '#8bb74a' : '#c9f36a'; ctx.beginPath(); ctx.roundRect(part.x * size + 2, part.y * size + 2, 20, 20, 6); ctx.fill(); });
+        elapsed += 1; requestAnimationFrame(frame);
+      }
+      const tick = () => { if (alive) requestAnimationFrame(frame); };
+      tick(); cleanup = () => { alive = false; removeKeys(); };
+    }
+
+    function startMemory() {
+      const symbols = ['🍓', '🚀', '🐸', '⭐', '🎈', '🍉', '👾', '🌈'];
+      const cards = [...symbols, ...symbols].sort(() => Math.random() - .5);
+      const board = document.createElement('div'); board.className = 'memory-grid'; area.append(board);
+      let first = null, locked = false, matches = 0, turns = 0, timers = [];
+      setStatus('Find all the pairs.'); setScore('0 / 8 pairs');
+      cards.forEach((symbol, i) => {
+        const card = document.createElement('button'); card.className = 'memory-card'; card.setAttribute('aria-label', `Hidden card ${i + 1}`); card.textContent = '?';
+        card.addEventListener('click', () => {
+          if (locked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+          card.textContent = symbol; card.classList.add('flipped'); card.setAttribute('aria-label', symbol);
+          if (!first) { first = { card, symbol }; return; }
+          turns++; locked = true;
+          if (first.symbol === symbol) {
+            first.card.classList.add('matched'); card.classList.add('matched'); first.card.disabled = card.disabled = true;
+            matches++; setScore(`${matches} / 8 pairs`); setStatus(`${turns} turns`); first = null; locked = false;
+            if (matches === 8) { setStatus(`All matched in ${turns} turns!`); void recordScore('memory', turns); }
+          } else {
+            const previous = first; first = null;
+            timers.push(setTimeout(() => { previous.card.textContent = card.textContent = '?'; previous.card.classList.remove('flipped'); card.classList.remove('flipped'); previous.card.setAttribute('aria-label', 'Hidden card'); card.setAttribute('aria-label', 'Hidden card'); locked = false; }, 750));
+            setStatus(`${turns} turns`);
+          }
+        });
+        board.append(card);
+      });
+      cleanup = () => timers.forEach(clearTimeout);
+    }
+
+    function startDodge() {
+      const ctx = addCanvas();
+      let player = { x: 224, y: 430, w: 32, h: 32 }, blocks = [], running = true, last = 0, spawn = 0, elapsed = 0, points = 0;
+      setStatus('Ready when you are'); setScore('0 seconds');
+      const removeKeys = keyControls(key => { if (key === 'arrowleft' || key === 'a') player.x -= 27; if (key === 'arrowright' || key === 'd') player.x += 27; player.x = Math.max(0, Math.min(448, player.x)); });
+      function frame(time) {
+        if (!running) return;
+        const delta = Math.min((time - (last || time)) / 16.67, 3); last = time; elapsed += delta / 60;
+        spawn += delta;
+        if (spawn > Math.max(18, 46 - elapsed / 2)) { spawn = 0; blocks.push({ x: Math.random() * 448, y: -30, size: 18 + Math.random() * 28, speed: 2.5 + Math.min(elapsed / 15, 3) }); }
+        blocks.forEach(block => block.y += block.speed * delta);
+        blocks = blocks.filter(block => block.y < 490);
+        if (blocks.some(b => player.x < b.x + b.size && player.x + player.w > b.x && player.y < b.y + b.size && player.y + player.h > b.y)) {
+          running = false; setStatus(`Bonk! You lasted ${points} seconds.`); void recordScore('dodge', points); endCanvasGame(ctx, 'Bonk!'); return;
+        }
+        points = Math.floor(elapsed); setScore(`${points} ${points === 1 ? 'second' : 'seconds'}`);
+        ctx.fillStyle = '#17231d'; ctx.fillRect(0, 0, 480, 480);
+        ctx.fillStyle = '#ff745d'; blocks.forEach(b => ctx.fillRect(b.x, b.y, b.size, b.size));
+        ctx.fillStyle = '#c9f36a'; ctx.beginPath(); ctx.roundRect(player.x, player.y, player.w, player.h, 7); ctx.fill();
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+      cleanup = () => { running = false; removeKeys(); };
+    }
+
+    function startTicTacToe() {
+      const board = document.createElement('div'); board.className = 'ttt-board'; area.append(board);
+      let cells = Array(9).fill(''), finished = false;
+      setStatus('Your turn. You are X.'); setScore('X vs computer O');
+      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      const winner = state => wins.find(line => line.every(i => state[i] && state[i] === state[line[0]]))?.map(i => state[i])[0] || '';
+      function minimax(state, maximizing) {
+        const won = winner(state); if (won === 'O') return 10; if (won === 'X') return -10; if (state.every(Boolean)) return 0;
+        const scores = [];
+        state.forEach((value, i) => { if (!value) { state[i] = maximizing ? 'O' : 'X'; scores.push(minimax(state, !maximizing)); state[i] = ''; } });
+        return maximizing ? Math.max(...scores) : Math.min(...scores);
+      }
+      function cpuMove() {
+        let best = -Infinity, choices = [];
+        cells.forEach((value, i) => { if (!value) { cells[i] = 'O'; const score = minimax(cells, false); cells[i] = ''; if (score > best) { best = score; choices = [i]; } else if (score === best) choices.push(i); } });
+        if (choices.length) cells[choices[Math.floor(Math.random() * choices.length)]] = 'O';
+      }
+      function render() {
+        board.replaceChildren();
+        cells.forEach((mark, i) => {
+          const cell = document.createElement('button'); cell.className = 'ttt-cell'; cell.textContent = mark; cell.setAttribute('aria-label', mark ? `${mark}, square ${i + 1}` : `Empty square ${i + 1}`); cell.disabled = !!mark || finished;
+          cell.addEventListener('click', () => {
+            if (finished || cells[i]) return;
+            cells[i] = 'X';
+            if (winner(cells) === 'X') { finished = true; setStatus('You win! Nice one.'); void recordScore('ttt', 1); }
+            else if (cells.every(Boolean)) { finished = true; setStatus("It's a draw!"); }
+            else { cpuMove(); if (winner(cells) === 'O') { finished = true; setStatus('The computer wins this round.'); } else if (cells.every(Boolean)) { finished = true; setStatus("It's a draw!"); } else setStatus('Your turn.'); }
+            render();
+          });
+          board.append(cell);
+        });
+      }
+      render(); cleanup = () => { finished = true; };
+    }
+
+    function startBreakout() {
+      const ctx = addCanvas();
+      const paddle = { x: 200, y: 448, w: 80, h: 11 }, ball = { x: 240, y: 400, dx: 3.2, dy: -4, r: 8 };
+      const bricks = [];
+      for (let row = 0; row < 5; row++) for (let col = 0; col < 8; col++) bricks.push({ x: 25 + col * 54, y: 50 + row * 28, w: 46, h: 17, alive: true, color: ['#c9f36a', '#70d9ee', '#ffd45b', '#ff745d', '#c8b7ff'][row] });
+      let running = true, points = 0, animation;
+      setStatus('Clear all the bricks.'); setScore('0 / 40 bricks');
+      const removeKeys = keyControls(key => { if (key === 'arrowleft' || key === 'a') paddle.x = Math.max(0, paddle.x - 26); if (key === 'arrowright' || key === 'd') paddle.x = Math.min(400, paddle.x + 26); });
+      const movePointer = event => { const rect = event.currentTarget.getBoundingClientRect(); paddle.x = Math.max(0, Math.min(400, ((event.clientX - rect.left) / rect.width) * 480 - paddle.w / 2)); };
+      const canvas = area.querySelector('canvas'); canvas.addEventListener('pointermove', movePointer);
+      function frame() {
+        if (!running) return;
+        ball.x += ball.dx; ball.y += ball.dy;
+        if (ball.x < ball.r || ball.x > 480 - ball.r) ball.dx *= -1;
+        if (ball.y < ball.r) ball.dy *= -1;
+        if (ball.dy > 0 && ball.y + ball.r >= paddle.y && ball.y - ball.r < paddle.y + paddle.h && ball.x > paddle.x - ball.r && ball.x < paddle.x + paddle.w + ball.r) {
+          ball.dy = -Math.abs(ball.dy); ball.dx = ((ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2)) * 5;
+        }
+        for (const brick of bricks) {
+          if (brick.alive && ball.x + ball.r > brick.x && ball.x - ball.r < brick.x + brick.w && ball.y + ball.r > brick.y && ball.y - ball.r < brick.y + brick.h) {
+            brick.alive = false; ball.dy *= -1; points++; setScore(`${points} / 40 bricks`); break;
+          }
+        }
+        ctx.fillStyle = '#17231d'; ctx.fillRect(0, 0, 480, 480);
+        bricks.forEach(brick => { if (brick.alive) { ctx.fillStyle = brick.color; ctx.fillRect(brick.x, brick.y, brick.w, brick.h); } });
+        ctx.fillStyle = '#c9f36a'; ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+        ctx.fillStyle = '#fffef9'; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+        if (points === 40) { running = false; setStatus('Wall cleared. You win!'); void recordScore('breakout', points); endCanvasGame(ctx, 'Wall cleared!'); return; }
+        if (ball.y > 490) { running = false; setStatus(`Ball lost. You cleared ${points} bricks.`); void recordScore('breakout', points); endCanvasGame(ctx, 'Game over'); return; }
+        animation = requestAnimationFrame(frame);
+      }
+      animation = requestAnimationFrame(frame);
+      cleanup = () => { running = false; cancelAnimationFrame(animation); removeKeys(); canvas.removeEventListener('pointermove', movePointer); };
+    }
+
+    function startClickChallenge() {
+      const zone = document.createElement('div'); zone.className = 'click-zone';
+      const target = document.createElement('button'); target.className = 'click-target'; target.setAttribute('aria-label', 'Click the target'); target.textContent = '✦'; zone.append(target); area.append(zone);
+      let clicks = 0, seconds = 15, live = true, timer;
+      setStatus('Go!'); setScore('0 hits');
+      function moveTarget() {
+        target.style.left = `${Math.random() * (zone.clientWidth - 74)}px`;
+        target.style.top = `${Math.random() * (zone.clientHeight - 74)}px`;
+      }
+      moveTarget();
+      target.addEventListener('click', () => { if (!live) return; clicks++; setScore(`${clicks} hits`); moveTarget(); });
+      timer = setInterval(() => {
+        seconds--; setStatus(`${seconds}s left`);
+        if (seconds <= 0) { clearInterval(timer); live = false; target.disabled = true; setStatus(`Time! You got ${clicks} ${clicks === 1 ? 'hit' : 'hits'}.`); void recordScore('click', clicks); }
+      }, 1000);
+      cleanup = () => { live = false; clearInterval(timer); };
+    }
+  </script>
+</body>
+</html>
